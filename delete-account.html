@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delete your Math Infinitum account · Math Infinitum</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+<nav><a href="index.html">Math Infinitum</a><a href="privacy.html">Privacy policy</a><a href="name-rules.html">Name rules</a><a href="delete-account.html">Delete your account</a><a href="contact.html">Contact</a></nav>
+<h1>Delete your Math Infinitum account</h1>
+<p class="summary">This deletes the online account of Math Infinitum’s ranked Daily, at once and for good: your name, your ranked results, rating, league and season standings, your deletion code and the reports you made.</p>
+<p>If you still have the app, it is quicker there: Settings → Online account → Delete online account.</p>
+<p>You need your name exactly as it appears on the board (capital letters do not matter) and the deletion code that Settings shows under Online account. Because the account is anonymous, the code is the only proof that it is yours. Without it, the account cannot be deleted on request.</p>
+<div class="card">
+<form id="delete-form">
+<label for="nickname">Name</label>
+<input id="nickname" name="nickname" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="16" required>
+<label for="code">Deletion code</label>
+<input id="code" name="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+<label class="check"><input id="confirm" type="checkbox" required> I understand that this cannot be undone.</label>
+<button id="submit" type="submit">Delete my account</button>
+</form>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+</div>
+<p>Lessons and practice are stored only on the phone and are not affected. Other players’ ratings keep the points they won or lost against you, with nothing that leads back to you.</p>
+<p>If the form does not work for you, write to <a href="mailto:mathpath6316@gmail.com">mathpath6316@gmail.com</a>.</p>
+<footer>Math Infinitum · <a href="mailto:mathpath6316@gmail.com">mathpath6316@gmail.com</a></footer>
+</main>
+<script>
+(function () {
+  var settings = {"endpoint":"https://ewqiyuqdbrnmrnjbhyaa.supabase.co/functions/v1/account","key":"sb_publishable_544UA4X1hx-FHBOmoLQfag_KykB7yHn","done":"Your account is deleted.","noMatch":"That name and code do not belong to the same account."};
+  var form = document.getElementById('delete-form');
+  var button = document.getElementById('submit');
+  var status = document.getElementById('status');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    button.disabled = true;
+    status.textContent = 'Deleting…';
+    fetch(settings.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: settings.key },
+      body: JSON.stringify({ action: 'delete-with-code', nickname: form.nickname.value.trim(), code: form.code.value })
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (body) {
+        if (response.ok && body.deleted) {
+          form.hidden = true;
+          status.textContent = settings.done;
+        } else {
+          status.textContent = body.error || settings.noMatch;
+          button.disabled = false;
+        }
+      });
+    }).catch(function () {
+      status.textContent = 'The server could not be reached. Try again later.';
+      button.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
